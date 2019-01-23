@@ -34,13 +34,13 @@ func main() {
 	}
 }
 
-// 工人处理方法，如果是长连接，这里最好是一个过度过程。
-// 比如：连接的验证授权等操作，如果完成验证授权，最好转到后面处理模块，不然无法发挥复用工作池的最大性能
+// The worker handling method, if it is a long connection, is best here to be an interim process.
+// For example, the connection authentication authorization and other operations, if the completion of authentication authorization, the best to the later processing module, or can not play the maximum performance of the reuse work pool
 func handler(conn net.Conn) error {
-	// 比如：连接验证
+	// For example: connection validation
 	// time.Sleep(1e7)
 
-	// 比如：验证成功，移交到后续模块处理
+	// For example: verification success, transfer to the subsequent module processing
 	// logic <- conn
 
 	return nil
