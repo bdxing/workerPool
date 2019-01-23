@@ -1,13 +1,13 @@
 ### WorkerPool
-net connection handler goruntime pool.
+net connection short handler goruntime pool.
 
 #### Example
 ```go
 package main
 
 import (
-	"log"
 	"github.com/bdxing/workerPool"
+	"log"
 	"net"
 )
 
