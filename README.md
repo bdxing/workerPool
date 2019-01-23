@@ -35,7 +35,10 @@ func main() {
 }
 
 // The worker handling method, if it is a long connection, is best here to be an interim process.
-// For example, the connection authentication authorization and other operations, if the completion of authentication authorization, the best to the later processing module, or can not play the maximum performance of the reuse work pool
+
+// For example, the connection authentication authorization and other operations,
+// if the completion of authentication authorization, the best to the later processing module,
+// or can not play the maximum performance of the reuse work pool
 func handler(conn net.Conn) error {
 	// For example: connection validation
 	// time.Sleep(1e7)
