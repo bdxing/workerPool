@@ -206,7 +206,10 @@ func (wp *WorkerPool) workerFunc(ch *workerChan) {
 		if c == nil {
 			break
 		}
-
+		if wp.LogAllErrors {
+			wp.Logger.Printf("lastUseTime: %d\n",
+				ch.lastUseTime.Unix())
+		}
 		if err = wp.WorkerFunc(c); err != nil {
 			if wp.LogAllErrors {
 				wp.Logger.Printf("error when serving connection %q<->%q: %s",
