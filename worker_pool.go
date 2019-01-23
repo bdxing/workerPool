@@ -188,6 +188,7 @@ func (wp *WorkerPool) getCh() *workerChan {
 
 func (wp *WorkerPool) release(ch *workerChan) bool {
 	ch.lastUseTime = time.Now()
+
 	wp.lock.Lock()
 	if wp.mustStop {
 		wp.lock.Unlock()
@@ -205,10 +206,6 @@ func (wp *WorkerPool) workerFunc(ch *workerChan) {
 	for c = range ch.ch {
 		if c == nil {
 			break
-		}
-		if wp.LogAllErrors {
-			wp.Logger.Printf("lastUseTime: %d\n",
-				ch.lastUseTime.Unix())
 		}
 		if err = wp.WorkerFunc(c); err != nil {
 			if wp.LogAllErrors {
