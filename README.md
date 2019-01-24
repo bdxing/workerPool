@@ -1,6 +1,8 @@
 ### Worker Pool
 net connection short handler goruntime pool.
 
+> to view `fasthttp` code, found a good library.
+
 #### Example
 
 ```go
