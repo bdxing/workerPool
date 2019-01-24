@@ -1,7 +1,8 @@
 ### Worker Pool
-net connection short handler goruntime pool.
 
-> to view `fasthttp` code, found a good library.
+这是一个网络IO的连接处理池。复用channel来实现的，自动伸缩，性能很棒，但请注意你的业务是否适合。
+
+> 我在阅读 `fasthttp` 源码的时候发现。
 
 #### Example
 
@@ -37,11 +38,11 @@ func main() {
 	}
 }
 
-// The worker handling method, if it is a long connection, is best here to be an interim process.
-
-// For example, the connection authentication authorization and other operations,
-// if the completion of authentication authorization, the best to the later processing module,
-// or can not play the maximum performance of the reuse work pool
+// 工作回调方法
+// 必须要注意的是，如果你想发挥最大性能，你这里不能使用带阻塞的业务代码，如果阻塞时间过长，可能会得不到你想要的性能。
+// 正常的使用方式:
+//              长阻塞，这里可以采用编写连接验证授权的代码，验证授权完成后，把连接交给后续模块继续执行即可。
+//              短阻塞，可直接写编写业务代码
 func handler(conn net.Conn) error {
 	// For example: connection validation
 	// time.Sleep(1e7)
