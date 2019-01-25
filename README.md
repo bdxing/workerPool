@@ -20,7 +20,6 @@ import (
 func main() {
 	wp := &workerPool.WorkerPool{
 		WorkerFunc:     handler,
-		LogAllErrors:   false,
 		MaxWorkerCount: 10,
 	}
 	wp.Start()
