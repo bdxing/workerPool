@@ -6,8 +6,6 @@
 
 #### Example 
 
-以一个TCP监听服务器为例，接收有效连接验证池。
-
 ```go
 package main
 
