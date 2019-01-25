@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+// DefaultConcurrency is the maximum number of concurrent connections
+const DefaultConcurrency = 256 * 1024
+
 // workerPool serves incoming task via a pool of workers
 // in FILO order, i.e. the most recently stopped worker will serve the next
 // incoming task.

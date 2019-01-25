@@ -2,9 +2,7 @@ package workerPool
 
 import (
 	"log"
-	"net"
 	"testing"
-	"time"
 )
 
 func TestWorkerPoolStartStopSerial(t *testing.T) {
@@ -13,9 +11,7 @@ func TestWorkerPoolStartStopSerial(t *testing.T) {
 
 func testWorkerPoolStartStop(t *testing.T) {
 	wp := &WorkerPool{
-		WorkerFunc: func(conn interface{}) {
-
-		},
+		WorkerFunc:     func(conn interface{}) {},
 		MaxWorkerCount: 10,
 	}
 	for i := 0; i < 10; i++ {
@@ -24,53 +20,28 @@ func testWorkerPoolStartStop(t *testing.T) {
 	}
 }
 
-func TestWorkerPool_Listen(t *testing.T) {
+type TestAdd struct {
+	a int
+	b int
+}
+
+func TestWorkerPool_Serve(t *testing.T) {
 	wp := &WorkerPool{
-		WorkerFunc: func(c interface{}) {
-			conn := c.(net.Conn)
-			time.Sleep(1e7)
-			conn.Close()
+		WorkerFunc: func(i interface{}) {
+			ta := i.(*TestAdd)
+			ta.a += ta.b
 		},
-		MaxWorkerCount: 10,
+		MaxWorkerCount: DefaultConcurrency,
 	}
 	wp.Start()
 
-	l, er := net.Listen("tcp", "0.0.0.0:6666")
-	if er != nil {
-		panic(er)
-	}
-	for {
-		conn, er := l.Accept()
-		if er != nil {
-			continue
-		}
-		if !wp.Serve(conn) {
-			log.Printf("wp.Serve timeout\n")
+	for i := 0; i < 100000000; i++ {
+		if !wp.Serve(&TestAdd{
+			a: i,
+			b: i + 1,
+		}) {
+			log.Printf("wp.Serve(): timeout\n")
 		}
 	}
-}
-
-func TestWorkerPool_Dial(t *testing.T) {
-	dial := func() {
-		conn, er := net.Dial("tcp", "127.0.0.1:6666")
-		if er != nil {
-			return
-		}
-		defer conn.Close()
-
-		msg := make([]byte, 1024)
-		for {
-			n, er := conn.Read(msg)
-			if er != nil {
-				return
-			}
-			log.Printf("msg: %v\n", msg[:n])
-		}
-	}
-
-	for i := 0; i < 2000; i++ {
-		dial()
-		//time.Sleep(1e6)
-	}
-	time.Sleep(10e9)
+	t.Logf("workerCount: %v\n", wp.workersCount)
 }
