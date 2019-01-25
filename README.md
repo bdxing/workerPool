@@ -4,7 +4,9 @@
 
 > 我在阅读 `fasthttp` 源码的时候发现。
 
-#### Example
+#### Example 
+
+以一个TCP监听服务器为例，接收有效连接验证池。
 
 ```go
 package main
