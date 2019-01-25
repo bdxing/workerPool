@@ -24,10 +24,7 @@ type TestAdd struct {
 
 func main() {
 	wp := &WorkerPool{
-		WorkerFunc: func(i interface{}) {
-			ta := i.(*TestAdd)
-			ta.a += ta.b
-		},
+		WorkerFunc: handler,
 		MaxWorkerCount: DefaultConcurrency,
 	}
 	nowTime := time.Now()
