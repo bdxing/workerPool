@@ -1,30 +1,24 @@
 package workerPool
 
 import (
-	"log"
-	"net"
 	"runtime"
 	"sync"
 	"time"
 )
 
-// workerPool serves incoming connections via a pool of workers
+// workerPool serves incoming task via a pool of workers
 // in FILO order, i.e. the most recently stopped worker will serve the next
-// incoming connection.
+// incoming task.
 //
 // Such a scheme keeps CPU caches hot (in theory).
 type WorkerPool struct {
-	// Function for serving server connections.
+	// Function for serving server task.
 	// It must leave c unclosed.
-	WorkerFunc func(net.Conn) error
+	WorkerFunc func(interface{})
 
 	MaxWorkerCount int
 
-	LogAllErrors bool
-
 	MaxIdleWorkerDuration time.Duration
-
-	Logger log.Logger
 
 	lock         sync.Mutex
 	workersCount int
@@ -39,7 +33,7 @@ type WorkerPool struct {
 
 type workerChan struct {
 	lastUseTime time.Time
-	ch          chan net.Conn
+	ch          chan interface{}
 }
 
 func (wp *WorkerPool) Start() {
@@ -69,9 +63,9 @@ func (wp *WorkerPool) Stop() {
 	close(wp.stopCh)
 	wp.stopCh = nil
 
-	// Stop all the workers waiting for incoming connections.
+	// Stop all the workers waiting for incoming task.
 	// Do not wait for busy workers - they will stop after
-	// serving the connection and noticing wp.mustStop = true.
+	// serving the task and noticing wp.mustStop = true.
 	wp.lock.Lock()
 	ready := wp.ready
 	for i, ch := range ready {
@@ -93,7 +87,7 @@ func (wp *WorkerPool) getMaxIdleWorkerDuration() time.Duration {
 func (wp *WorkerPool) clean(scratch *[]*workerChan) {
 	maxIdleWorkerDuration := wp.getMaxIdleWorkerDuration()
 
-	// Clean least recently used workers if they didn't serve connections
+	// Clean least recently used workers if they didn't serve task
 	// for more than maxIdleWorkerDuration.
 	currentTime := time.Now()
 
@@ -125,12 +119,12 @@ func (wp *WorkerPool) clean(scratch *[]*workerChan) {
 	}
 }
 
-func (wp *WorkerPool) Serve(c net.Conn) bool {
+func (wp *WorkerPool) Serve(t interface{}) bool {
 	ch := wp.getCh()
 	if ch == nil {
 		return false
 	}
-	ch.ch <- c
+	ch.ch <- t
 	return true
 }
 
@@ -144,7 +138,7 @@ var workerChanCap = func() int {
 
 	// Use non-blocking workerChan if GOMAXPROCS>1,
 	// since otherwise the Serve caller (Acceptor) may lag accepting
-	// new connections if WorkerFunc is CPU-bound.
+	// new task if WorkerFunc is CPU-bound.
 	return 1
 }()
 
@@ -174,7 +168,7 @@ func (wp *WorkerPool) getCh() *workerChan {
 		vch := wp.workerChanPool.Get()
 		if vch == nil {
 			vch = &workerChan{
-				ch: make(chan net.Conn, workerChanCap),
+				ch: make(chan interface{}, workerChanCap),
 			}
 		}
 		ch = vch.(*workerChan)
@@ -200,20 +194,14 @@ func (wp *WorkerPool) release(ch *workerChan) bool {
 }
 
 func (wp *WorkerPool) workerFunc(ch *workerChan) {
-	var c net.Conn
+	var t interface{}
 
-	var err error
-	for c = range ch.ch {
-		if c == nil {
+	for t = range ch.ch {
+		if t == nil {
 			break
 		}
-		if err = wp.WorkerFunc(c); err != nil {
-			if wp.LogAllErrors {
-				wp.Logger.Printf("error when serving connection %q<->%q: %s",
-					c.LocalAddr(), c.RemoteAddr(), err)
-			}
-		}
-		c = nil
+		wp.WorkerFunc(t)
+		t = nil
 
 		if !wp.release(ch) {
 			break

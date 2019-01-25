@@ -13,12 +13,10 @@ func TestWorkerPoolStartStopSerial(t *testing.T) {
 
 func testWorkerPoolStartStop(t *testing.T) {
 	wp := &WorkerPool{
-		WorkerFunc: func(conn net.Conn) error {
+		WorkerFunc: func(conn interface{}) {
 
-			return nil
 		},
 		MaxWorkerCount: 10,
-		Logger:         log.Logger{},
 	}
 	for i := 0; i < 10; i++ {
 		wp.Start()
@@ -28,14 +26,12 @@ func testWorkerPoolStartStop(t *testing.T) {
 
 func TestWorkerPool_Listen(t *testing.T) {
 	wp := &WorkerPool{
-		WorkerFunc: func(conn net.Conn) error {
+		WorkerFunc: func(c interface{}) {
+			conn := c.(net.Conn)
 			time.Sleep(1e7)
 			conn.Close()
-			return nil
 		},
-		LogAllErrors:   false,
 		MaxWorkerCount: 10,
-		Logger:         log.Logger{},
 	}
 	wp.Start()
 
