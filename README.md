@@ -12,31 +12,36 @@
 package main
 
 import (
-	"github.com/bdxing/workerPool"
+	. "github.com/bdxing/workerPool"
 	"log"
-	"net"
+	"time"
 )
 
+type TestAdd struct {
+	a int
+	b int
+}
+
 func main() {
-	wp := &workerPool.WorkerPool{
-		WorkerFunc:     handler,
-		MaxWorkerCount: 10,
+	wp := &WorkerPool{
+		WorkerFunc: func(i interface{}) {
+			ta := i.(*TestAdd)
+			ta.a += ta.b
+		},
+		MaxWorkerCount: DefaultConcurrency,
 	}
+	nowTime := time.Now()
 	wp.Start()
 
-	l, er := net.Listen("tcp", "0.0.0.0:6666")
-	if er != nil {
-		panic(er)
-	}
-	for {
-		conn, er := l.Accept()
-		if er != nil {
-			continue
-		}
-		if !wp.Serve(conn) {
-			log.Printf("wp.Serve timeout\n")
+	for i := 0; i < 100000000; i++ {
+		if !wp.Serve(&TestAdd{
+			a: i,
+			b: i + 1,
+		}) {
+			log.Printf("wp.Serve(): timeout\n")
 		}
 	}
+	log.Printf("consuming time: %v\n", time.Now().Sub(nowTime))
 }
 
 // 工作回调方法
@@ -45,13 +50,12 @@ func main() {
 // 正常的使用方式:
 // 长阻塞：可以采用编写连接验证授权的代码，验证授权完成后，把连接交给后续模块继续执行即可。
 // 短阻塞：可直接写编写业务代码。
-func handler(conn interface{})  {
+func handler(i interface{}) {
 	// For example: connection validation
-	// time.Sleep(1e7)
+	ta := i.(*TestAdd)
+	ta.a += ta.b
 
 	// For example: verification success, transfer to the subsequent module processing
 	// logic <- conn
-
 }
-
 ```

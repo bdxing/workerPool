@@ -43,5 +43,5 @@ func TestWorkerPool_Serve(t *testing.T) {
 			log.Printf("wp.Serve(): timeout\n")
 		}
 	}
-	t.Logf("workerCount: %v\n", wp.workersCount)
+	log.Printf("workerCount: %v\n", wp.workersCount)
 }
