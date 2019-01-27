@@ -51,6 +51,5 @@ func handler(i interface{}) {
 	ta.a += ta.b
 
 	// For example: verification success, transfer to the subsequent module processing
-	// logic <- conn
 }
 ```
