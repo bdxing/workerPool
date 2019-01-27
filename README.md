@@ -1,4 +1,4 @@
-# workerPool
+# Worker Pool
 
 > 我在阅读 `fasthttp` 源码的时候发现，稍作修改。
 
