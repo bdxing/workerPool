@@ -6,7 +6,7 @@
 
 # usage 
 
-下面是一个工作过程。
+举例一个工作过程：
 
 ```go
 package main
