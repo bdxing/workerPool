@@ -4,7 +4,7 @@
 
 我在阅读 `fasthttp` 项目源码的时候发现，稍作修改。
 
-# usage 
+### Usage 
 
 举例一个工作过程：
 
@@ -54,4 +54,21 @@ func handler(i interface{}) {
 
 	// For example: verification success, transfer to the subsequent module processing
 }
+```
+
+### Benchmark
+
+CPU: Core(TM) i7-7700HQ
+
+```text
+goarch: amd64
+pkg: workerPool
+BenchmarkWorkerPool_Serve-8   	 3000000	       515 ns/op	      16 B/op	       1 allocs/op
+--- BENCH: BenchmarkWorkerPool_Serve-8
+    worker_pool_test.go:77: taskCount: 1, workerCount: 1
+    worker_pool_test.go:77: taskCount: 100, workerCount: 16
+    worker_pool_test.go:77: taskCount: 10000, workerCount: 62
+    worker_pool_test.go:77: taskCount: 1000000, workerCount: 297
+    worker_pool_test.go:77: taskCount: 3000000, workerCount: 660
+PASS
 ```
