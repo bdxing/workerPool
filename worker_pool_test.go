@@ -74,5 +74,5 @@ func BenchmarkWorkerPool_Serve(b *testing.B) {
 		}
 	}
 
-	b.Logf("taskCount: %d, workerCount: %v\n", b.N, wp.workersCount)
+	b.Logf("taskCount: %10d, workerCount: %10d\n", b.N, wp.workersCount)
 }

@@ -19,11 +19,16 @@ type TestAdd struct {
 }
 
 func main() {
-	wp := &WorkerPool{
-		WorkerFunc:     handler,
-		MaxWorkerCount: DefaultConcurrency,
+	workerFunc := func(tmp interface{}) {
+		ta := tmp.(*TestAdd)
+		ta.a += ta.b
 	}
-	nowTime := time.Now()
+
+	wp := &WorkerPool{
+		MaxWorkerCount:        DefaultConcurrency, // max worker goroutine number, Hot add
+		MaxIdleWorkerDuration: 5 * time.Second,    // worker goroutine max Idle Worker Duration
+		WorkerFunc:            workerFunc,         // worker method
+	}
 	wp.Start()
 
 	for i := 0; i < 100000000; i++ {
@@ -34,13 +39,8 @@ func main() {
 			log.Printf("wp.Serve(): timeout\n")
 		}
 	}
-	log.Printf("consuming time: %v\n", time.Now().Sub(nowTime))
 }
 
-func handler(tmp interface{}) {
-	ta := tmp.(*TestAdd)
-	ta.a += ta.b
-}
 ```
 
 ### Benchmark
@@ -48,14 +48,12 @@ func handler(tmp interface{}) {
 CPU: Core(TM) i7-7700HQ
 
 ```text
-goarch: amd64
-pkg: workerPool
-BenchmarkWorkerPool_Serve-8   	 3000000	       515 ns/op	      16 B/op	       1 allocs/op
+BenchmarkWorkerPool_Serve-8   	 3000000	       508 ns/op	      16 B/op	       1 allocs/op
 --- BENCH: BenchmarkWorkerPool_Serve-8
-    worker_pool_test.go:77: taskCount: 1, workerCount: 1
-    worker_pool_test.go:77: taskCount: 100, workerCount: 16
-    worker_pool_test.go:77: taskCount: 10000, workerCount: 62
-    worker_pool_test.go:77: taskCount: 1000000, workerCount: 297
-    worker_pool_test.go:77: taskCount: 3000000, workerCount: 660
+    worker_pool_test.go:77: taskCount:          1, workerCount:          1
+    worker_pool_test.go:77: taskCount:        100, workerCount:         25
+    worker_pool_test.go:77: taskCount:      10000, workerCount:         46
+    worker_pool_test.go:77: taskCount:    1000000, workerCount:        461
+    worker_pool_test.go:77: taskCount:    3000000, workerCount:        794
 PASS
 ```
