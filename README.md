@@ -39,8 +39,10 @@ func main() {
 			log.Printf("wp.Serve(): timeout\n")
 		}
 	}
-}
 
+	// shutdown worker pool
+	//wp.Stop()
+}
 ```
 
 ### Benchmark
