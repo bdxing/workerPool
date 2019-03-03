@@ -37,12 +37,9 @@ func main() {
 	log.Printf("consuming time: %v\n", time.Now().Sub(nowTime))
 }
 
-func handler(i interface{}) {
-	// For example: connection validation
-	ta := i.(*TestAdd)
+func handler(tmp interface{}) {
+	ta := tmp.(*TestAdd)
 	ta.a += ta.b
-
-	// For example: verification success, transfer to the subsequent module processing
 }
 ```
 
