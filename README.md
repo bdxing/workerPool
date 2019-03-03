@@ -31,6 +31,8 @@ func main() {
 	}
 	wp.Start()
 
+	nowTime := time.Now()
+
 	for i := 0; i < 100000000; i++ {
 		if !wp.Serve(&TestAdd{
 			a: i,
@@ -40,8 +42,11 @@ func main() {
 		}
 	}
 
+	log.Printf("consuming time: %v\n", time.Now().Sub(nowTime))
+
 	// shutdown worker pool
 	//wp.Stop()
+
 }
 ```
 
