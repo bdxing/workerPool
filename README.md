@@ -1,12 +1,8 @@
 # worker pool
 
-这是一个复用协程池，避免在高并发下大量的创建和销毁的性能消耗，保证模块的稳定调度，合理的自动伸缩协程池的大小来适用当前业务调度。
-
-我在阅读 `fasthttp` 项目源码的时候发现，稍作修改。
+This is a goroutine pool, which can avoid a large amount of performance consumption of creation and destruction under high concurrency, ensure the stable scheduling of modules, and automatically scale the size of the co-program pool to fit the current business scheduling.
 
 ### Usage 
-
-举例一个工作过程：
 
 ```go
 package main
@@ -41,12 +37,6 @@ func main() {
 	log.Printf("consuming time: %v\n", time.Now().Sub(nowTime))
 }
 
-// 工作回调方法
-// 必须要注意的是，如果你想发挥最大性能，你这里不能使用带阻塞的业务代码，如果阻塞时间过长，可能会得不到你想要的性能。
-
-// 正常的使用方式:
-// 长阻塞：可以采用编写连接验证授权的代码，验证授权完成后，把连接交给后续模块继续执行即可。
-// 短阻塞：可直接写编写业务代码。
 func handler(i interface{}) {
 	// For example: connection validation
 	ta := i.(*TestAdd)
