@@ -20,7 +20,7 @@ type TestAdd struct {
 
 func main() {
 	wp := &WorkerPool{
-		WorkerFunc: handler,
+		WorkerFunc:     handler,
 		MaxWorkerCount: DefaultConcurrency,
 	}
 	nowTime := time.Now()
