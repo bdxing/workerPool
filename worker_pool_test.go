@@ -55,16 +55,19 @@ func BenchmarkWorkerPool_Serve(b *testing.B) {
 	}
 	wp.Start()
 
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		if !wp.Serve(&TestAdd{
-			a: i,
-			b: i + 1,
-		}) {
-			b.Logf("wp.Serve(): timeout\n")
-		}
-	}
 
+	go func() {
+		for i := 0; i < b.N; i++ {
+			if !wp.Serve(&TestAdd{
+				a: i,
+				b: i + 1,
+			}) {
+				b.Logf("wp.Serve(): timeout\n")
+			}
+		}
+	}()
+
+	b.ResetTimer()
 	sNum := 0
 	for {
 		<-s
