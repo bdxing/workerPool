@@ -6,7 +6,7 @@ This is a goroutine pool, which can avoid a large amount of performance consumpt
 To install this package, you need to setup your Go workspace.  The simplest way to install the library is to run:
 
 ```
-$ go get github.com/bdxing/workerPool
+go get github.com/bdxing/workerPool
 ```
 
 ## Example 
