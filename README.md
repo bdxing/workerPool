@@ -59,15 +59,17 @@ func main() {
 
 ## Benchmark
 
-CPU: Core(TM) i7-7700HQ
-
 ```text
-BenchmarkWorkerPool_Serve-8   	 3000000	       508 ns/op	      16 B/op	       1 allocs/op
---- BENCH: BenchmarkWorkerPool_Serve-8
-    worker_pool_test.go:77: taskCount:          1, workerCount:          1
-    worker_pool_test.go:77: taskCount:        100, workerCount:         25
-    worker_pool_test.go:77: taskCount:      10000, workerCount:         46
-    worker_pool_test.go:77: taskCount:    1000000, workerCount:        461
-    worker_pool_test.go:77: taskCount:    3000000, workerCount:        794
+goos: windows
+goarch: amd64
+pkg: github.com/bdxing/workerPool
+cpu: Intel(R) Core(TM) i5-10400F CPU @ 2.90GHz
+BenchmarkWorkerPool_Serve
+    worker_pool_test.go:80: taskCount:          1, workerCount:          1
+    worker_pool_test.go:80: taskCount:        100, workerCount:         16
+    worker_pool_test.go:80: taskCount:      10000, workerCount:         45
+    worker_pool_test.go:80: taskCount:    1000000, workerCount:        111
+    worker_pool_test.go:80: taskCount:    2567829, workerCount:        206
+BenchmarkWorkerPool_Serve-12    	 2567829	       467.9 ns/op	      16 B/op	       1 allocs/op
 PASS
 ```
